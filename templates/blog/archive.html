@@ -1,0 +1,19 @@
+{% extends 'base.html' %} 
+{% block main %}
+<div class="archive"> 
+	{% for key, value in post_list.items %}
+		<h2>{{ key.year }}年{{ key.month }}月</h2>
+		<ul>
+			{% for post in value %}
+				<li><span>
+					{{ post.created_time.year }}-{{ post.created_time.month }}-{{ post.created_time.day }}</span> 
+					&raquo; <a href="{{ post.get_absolute_url }}"> {{ post.title }}</a></li>
+			{% empty %}
+			暂时还没有发布的文章！
+			{% endfor %}
+		</ul>
+	{% empty %}
+	暂无归档！ 
+	{% endfor %}
+</div>
+{% endblock main %}

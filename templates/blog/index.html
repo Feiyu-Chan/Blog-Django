@@ -1,0 +1,112 @@
+{% extends 'base.html' %} 
+{% load blog_tags %}
+{% block main %} 
+{% for post in post_list %}
+<article class="post post-1">
+    <header>
+        <h1 class="entry-title">
+            <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+        </h1>
+        <div class="entry-meta">
+            <a href="{% url 'blog:category' post.category.pk %}"><span class="glyphicon glyphicon-list"></span> {{ post.category.name }} ·</a>
+            <a href="#"><span class="glyphicon glyphicon-time"></span> 
+                {{ post.created_time.year }}-{{ post.created_time.month }}-{{ post.created_time.day }} ·</a>
+            <a href="#"><span class="glyphicon glyphicon-comment"></span> {{ post.comment_set.count }} ·</a>
+            <a href="#"><span class="glyphicon glyphicon-eye-open"></span>&nbsp;{{ post.views }}</a>
+        </div>
+    </header>
+    <div class="entry-content clearfix">
+        <p>{{ post.excerpt }}...</p>
+        <div class="read-more cl-effect-14">
+            <a href="{{ post.get_absolute_url }}" class="more-link">继续阅读 <span class="meta-nav">→</span></a>
+        </div>
+    </div>
+</article>
+
+{% empty %}
+<div class="no-post">暂时还没有发布的文章！</div>
+{% endfor %} 
+
+{% if is_paginated %}
+<div class='pagination'>
+    {% if first %}
+        <a href="?page=1">1</a>
+    {% endif %} 
+    {% if left %} 
+        {% if left_has_more %}
+            <span>...</span> 
+        {% endif %} 
+        {% for i in left %}
+            <a href="?page={{ i }}">{{ i }}</a>
+        {% endfor %} 
+    {% endif %}
+        <a href="?page={{ page_obj.number }}" style="color: red">{{ page_obj.number }}</a> 
+    {% if right %} 
+        {% for i in right %}
+            <a href="?page={{ i }}">{{ i }}</a> 
+        {% endfor %} 
+        {% if right_has_more %}
+            <span>...</span> 
+        {% endif %} 
+    {% endif %}
+    {% if last %}
+        <a href="?page={{ paginator.num_pages }}">{{ paginator.num_pages }}</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock main %} 
+
+ {% block toc %}
+<div class="widget widget-hot-posts">
+    {% get_hot_posts as hot_posts_list %}
+    <h3 class="widget-title">热门文章</h3>
+    <ul>
+        {% for hot_post in hot_posts_list %}
+        <li>
+            <a href="{% url 'blog:detail' hot_post.pk %}">
+                {{hot_post.title}}</a>
+        </li>
+        {% empty %} 
+        暂无文章！ 
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="widget widget-category">
+    <h3 class="widget-title">分类</h3>
+    {% get_categories as category_list %}
+    <ul>
+        {% for category in category_list %}
+        <li>
+            <a href="{% url 'blog:category' category.pk %}">
+                {{ category.name }}&nbsp;
+                <span class="badge">{{ category.num_post }}</span>
+            </a>
+        </li>
+        {% empty %} 
+        暂无分类！ 
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="widget widget-tag-cloud">
+    <h3 class="widget-title">标签云</h3>
+    {% get_tags as tag_list %}
+    <ul>
+        {% for tag in tag_list %}
+        <li>
+            <a href="{% url 'blog:tag' tag.pk %}">
+                <span class="glyphicon glyphicon-tag"></span>
+                &nbsp;&nbsp;{{tag.name}}&nbsp;
+                <span class="badge">{{ tag.num_post }}</span></a>
+        </li>
+        {% empty %}
+        暂无标签！
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="rss">
+    <a href="{% url 'rss' %}"><span class="ion-social-rss-outline"></span> RSS 订阅</a>
+</div>
+ {% endblock toc %}
